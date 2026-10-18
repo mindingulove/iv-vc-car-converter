@@ -128,3 +128,7 @@ Keep GTA III, the original CrossOver installation, source archives, and unrelate
 - revc-metal: installed; SHA256 `d9edd123ec0cc421449dbbd7b4eede3105c767082fef3f1558ad73da34565f52`; backup `/Users/jaymeeduardo/Documents/revc-metal-run/backups/sun-rays-msaa-20261018-015747`.
 
 Native compute/composite and MSAA fixtures passed in both games. These installed changes do not resolve the newly reported windscreen/occupant defect or missing visible lamp breakage. Full gameplay and period/handling/appearance acceptance remain open.
+
+### Latest saved resolution settings
+
+After Vice City exited, `RenderScaleIdx=0` (100%), `Retina=0`, `Trails=1` were verified in reVC.ini. Earlier 50% render-scale evidence is historical, not the current saved value. The Metal backend sizes the framebuffer in window points when Retina is off. Full-image softness therefore still needs a controlled comparison of Retina pixel resolution, legacy trails and temporal reconstruction. Preserve MSAA/MetalFX; do not silently quadruple pixel cost or disable temporal smoothing. No post-change game image was captured.
