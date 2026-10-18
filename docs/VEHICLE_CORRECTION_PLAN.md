@@ -199,3 +199,9 @@ Installation: all four signed binaries installed while both games were stopped; 
 - revc-metal-run: Metal SHA256 `dbe956d9709f927ed68db6a6b9b8b2fa6255fd06d5462c2923af207eea78d4ed`; backup `/Users/jaymeeduardo/Documents/revc-metal-run/backups/window-reflections-20261018-051333`.
 
 Regression check: restoring the old dry-weather gate in a temporary test copy eliminates standard-pipeline reflection output and fails the visible-reflection assertion.
+
+Final fallback guard: MatFX switches to traced glass only when ray tracing is actually ready; OpenGL and unavailable-RT configurations retain their legacy environment pass. Both games were rebuilt, the full pipeline tests repeated, and all four signed binaries reinstalled with unchanged settings. This supersedes the preceding installation hashes.
+
+- regta-upstate-run: Metal SHA256 `8ae534cae178aa049237f7962b7e7bdaa93356db9f3aab2bddcbf416e4bb14f5`; backup `/Users/jaymeeduardo/Documents/regta-upstate-run/backups/window-reflections-20261018-051911`.
+
+- revc-metal-run: Metal SHA256 `53c63bfc127d72edb3234e966b4f0935c2190a141a175c1f112ea9f345922866`; backup `/Users/jaymeeduardo/Documents/revc-metal-run/backups/window-reflections-20261018-051911`.
