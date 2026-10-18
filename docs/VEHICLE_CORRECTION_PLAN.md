@@ -165,3 +165,20 @@ Glass material update installation records:
 - regta-upstate-run: installed; SHA256 `8b9d0f368e1265dc01a7420698ae3930f8725ca2d0db4f11a071526a5a03854b`; staged path `/Users/jaymeeduardo/Documents/regta-upstate-run/.glass-material-update-20261018-032803`.
 
 - revc-metal-run: installed; SHA256 `66546a1d7397eb22aec3bd6ab5892e4bc7f63f930a3e74bc0c761983f6b721a7`; staged path `/Users/jaymeeduardo/Documents/revc-metal-run/.glass-material-update-20261018-032803`.
+
+
+## C32: apply the earlier FPS fixes to both games
+
+Audited both trees: opt-in text logging, traced-reflection env-map bypass/alternate-frame fallback, Retina-aware requested sizing, car/pole blob suppression with pedestrian shadow preservation, HUD depth/stencil clear and GPU diagnostics are already present. Removed the remaining periodic GLFW hover query; initialized hover at callback registration and refresh it on focus regain. Both Metal and both OpenGL builds pass. Production cursor callbacks and actual Metal drawable sizing pass hidden native tests. Four signed executables installed with backups while both games were stopped; INI hashes unchanged. No stale text_debug.log was present. Main III commit `86cab67`. No gameplay FPS claim.
+
+regta-upstate-run backup: `/Users/jaymeeduardo/Documents/regta-upstate-run/backups/performance-parity-20261018-035153`.
+
+- re3 SHA256 `628c09d45fc7e119ead709bf24cd95edbb7238c38d56d9c4cffec4e42df43180`.
+
+- re3_metal SHA256 `c80284d6b150e7ef373fddfb297876faa0d0fa2c0031ec0c4ec950ea99fa03b1`.
+
+revc-metal-run backup: `/Users/jaymeeduardo/Documents/revc-metal-run/backups/performance-parity-20261018-035154`.
+
+- reVC SHA256 `80ca8b18828d662500371fb7da39f3eac0cca72cb68ab8ddfe6b05e28a9eb18f`.
+
+- reVC_metal SHA256 `6ac9f6530097d9972c8ada6ee53fbe555c23095e4ad3f655094ba71bf511d24f`.
