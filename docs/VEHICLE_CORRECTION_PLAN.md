@@ -182,3 +182,20 @@ revc-metal-run backup: `/Users/jaymeeduardo/Documents/revc-metal-run/backups/per
 - reVC SHA256 `80ca8b18828d662500371fb7da39f3eac0cca72cb68ab8ddfe6b05e28a9eb18f`.
 
 - reVC_metal SHA256 `6ac9f6530097d9972c8ada6ee53fbe555c23095e4ad3f655094ba71bf511d24f`.
+
+
+## All car windows missing reflections: follow-up correction
+
+User report: reflections were absent from all car windows at every angle after the previous update. This remains a gameplay acceptance failure until the installed correction is checked.
+
+Confirmed pipeline defects: standard/MatFX vehicle materials did not set the glass uniform; the environment pass explicitly cleared ray metadata; and generic reflection attachments were disabled in dry weather. Glass now receives the standard traced pass, writes its own depth and vehicle owner, and emits reflection data on dry surfaces. Vehicle glass is exempt from the static-building horizontal-surface mask. Neo glass now follows the glass on/off/strength control and uses a display-strength remap of Fresnel to keep reflected scenery legible while retaining cabin transmission. This remap is artistic, not a change to physical Fresnel or trace quality; specular highlights retain the original dielectric response. Opaque paint remains unchanged.
+
+Validation: both OpenGL and both Metal builds pass. Native Metal material tests preserve cabin visibility, normal/backface agreement and paint behaviour. The full production Neo and MatFX renderer fixture uses a textured transparent pane, 4x MSAA, reduced-resolution RT preparation, ray tracing and current-frame composite. Both pipelines produce visible reflections head-on and at grazing angles; glass Off removes traced contribution. The fixture runs offscreen without starting the game. It supplies offscreen targets and enables the main-camera matrix branch for that offscreen camera; it does not verify presentation or actual gameplay temporal history. Existing render scale, Retina, RT resolution, geometry, MSAA and temporal settings are retained. Dry-weather reflection metadata adds bandwidth; no FPS improvement is claimed.
+
+Installation: all four signed binaries installed while both games were stopped; settings hashes unchanged. No game was launched.
+
+- regta-upstate-run: Metal SHA256 `1e6c4801799ec563f5b8f0533969f823943627af0851171d68e7966743fd2cfb`; backup `/Users/jaymeeduardo/Documents/regta-upstate-run/backups/window-reflections-20261018-051333`.
+
+- revc-metal-run: Metal SHA256 `dbe956d9709f927ed68db6a6b9b8b2fa6255fd06d5462c2923af207eea78d4ed`; backup `/Users/jaymeeduardo/Documents/revc-metal-run/backups/window-reflections-20261018-051333`.
+
+Regression check: restoring the old dry-weather gate in a temporary test copy eliminates standard-pipeline reflection output and fails the visible-reflection assertion.
