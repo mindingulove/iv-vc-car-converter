@@ -145,3 +145,23 @@ After Vice City exited, `RenderScaleIdx=0` (100%), `Retina=0`, `Trails=1` were v
 Current build/install distinction: new reflection/performance/lamp builds and 123 regenerated packages are verified in staging. Vice City was running when installation was checked; do not replace its executable or assets while running. Record the final installation and hashes separately. Earlier installed build hashes above remain historical evidence.
 
 GTA III reflection/performance update installed while stopped: main commit `84e38a3`, librw `30a681c`; installed SHA256 `f18adb6c32a8ea64d207431c84bc4c159cea372ef70fe9b9718652e0fa1a8646`. Backup: `/Users/jaymeeduardo/Documents/regta-upstate-run/backups/reflection-performance-20261018-030815`. Settings preserved; no launch or gameplay verification. VC update prepared at `/Users/jaymeeduardo/Documents/revc-metal-run/.vehicle-corrections-20261018-030509`; executable SHA256 `5efef7972030bab5a23ba5f4e3217bc46b9c70ff5e983c111792a352dea3a584`. Installation is pending a stopped-game check.
+
+
+VC reflection/performance/lamp update INSTALLED after both reVC processes stopped. All 123 live packages and 738 asset/data hashes verified; executable strict signature and SHA256 match `5efef7972030bab5a23ba5f4e3217bc46b9c70ff5e983c111792a352dea3a584`. Backup: `/Users/jaymeeduardo/Documents/revc-metal-run/backups/vehicle-corrections-20261018-030509`. Settings retained. No game launch or gameplay/FPS verification. This supersedes the pending installation status above.
+
+
+## Gameplay regression after the reflection update: 03:21:38 / 03:21:49
+
+The user supplied two gameplay screenshots after installation. The rear and front glass remain strongly blue, and the driver appears blue/overlaid through the front windshield. C04/C12/C13/C29 remain FAILED in gameplay, despite the prior pane-origin and owner fixtures passing. HUD observations are 24 and 21 FPS; ray tracing 17.6 and 20.8 ms; MetalFX 4.1 ms; whole-frame GPU 35.3 and 38.1 ms. These are different views, not a controlled before/after benchmark.
+
+A second material defect was confirmed in source: transparent glass used opaque paint's forced 60-90 percent clear coat, and back-facing normals could force maximum reflection. A dedicated dielectric glass flag, normal orientation toward the viewer, 0.04 normal-incidence Fresnel and angle-dependent reflection/highlights are now implemented in both source trees. Body paint is unchanged. Native GPU tests check head-on/backface equality, stronger grazing reflection, retained pane transmission and unchanged paint/livery response. This is a staged correction; gameplay success has NOT been established. No reflection resolution, ray count, geometry, MSAA or temporal quality was reduced.
+
+Evidence: `/var/folders/tf/bqs_qxsj699bcb4k4mjvml4w0000gp/T/TemporaryItems/NSIRD_screencaptureui_E1zG3L/Screenshot 2026-10-18 at 3.21.38 am.png`; SHA256 `d1bccf76de557d727d07b18f1b69e21591cd805fcb2ae8cfee82b3be53ab3a8a`.
+
+Evidence: `/var/folders/tf/bqs_qxsj699bcb4k4mjvml4w0000gp/T/TemporaryItems/NSIRD_screencaptureui_g31Wgx/Screenshot 2026-10-18 at 3.21.49 am.png`; SHA256 `11454afe06a2d93eb97c87fc663ea064c1eb79bbe154212970d2cca9cab96275`.
+
+Glass material update installation records:
+
+- regta-upstate-run: installed; SHA256 `8b9d0f368e1265dc01a7420698ae3930f8725ca2d0db4f11a071526a5a03854b`; staged path `/Users/jaymeeduardo/Documents/regta-upstate-run/.glass-material-update-20261018-032803`.
+
+- revc-metal-run: installed; SHA256 `66546a1d7397eb22aec3bd6ab5892e4bc7f63f930a3e74bc0c761983f6b721a7`; staged path `/Users/jaymeeduardo/Documents/revc-metal-run/.glass-material-update-20261018-032803`.
