@@ -88,7 +88,7 @@ def export(gltf_path,out,name,livery=None,paint_colors=None):
   if native and native not in ('chassis_dummy',) and not native.startswith(('wheel_','iv_','extra')):
    f=clump.frame_list[frames[target]];f.parent=frames[native];f.position=rw.Vector(0,0,0)
    pivots[target]=pivots[native].copy();extraParents[target]=native
- for target,bones in [('ped_frontseat',['seat_pside_f','seat_dside_f']),('ped_backseat',['seat_pside_r','seat_dside_r']),('headlights',['headlight_r','headlight_l']),('taillights',['taillight_r','taillight_l']),('exhaust',['exhaust','exhaust_2'])]:
+ for target,bones in [('ped_frontseat',['seat_pside_f','seat_dside_f']),('ped_backseat',['seat_pside_r','seat_dside_r']),('headlights',['headlight_r','headlight_l']),('taillights',['taillight_r','taillight_l','brakelight_r','brakelight_l']),('exhaust',['exhaust','exhaust_2'])]:
   bone=next((b for b in bones if b in nameids),None)
   if bone:frame(target,root,pos(nameids[bone]))
  wheel_instances=[]
@@ -140,7 +140,23 @@ def export(gltf_path,out,name,livery=None,paint_colors=None):
    p=parents.get(i)
    if p not in boneids:return 'chassis_dummy'
    i=p
- buckets=collections.defaultdict(list);mixed=0;weighted=0
+ buckets=collections.defaultdict(list);mixed=0;weighted=0;lamp_parts={}
+ lamp_points={}
+ for tag,bones in [('fl',['headlight_l']),('fr',['headlight_r']),('rl',['taillight_l','brakelight_l']),('rr',['taillight_r','brakelight_r'])]:
+  bone=next((b for b in bones if b in nameids),None)
+  if bone:lamp_points[tag]=np.asarray(pos(nameids[bone]))
+ def lamp_target(material,ids,vertices,target):
+  e=d['materials'][material].get('extras',{});shader=e.get('shader','').lower()
+  if target.startswith(('wheel_','extra','iv_')) or not ('lightsemissive' in shader or 'glass' in shader):return target
+  points=np.array([vc(vertices[i]) for i in ids]);centre=points.mean(axis=0)
+  if not lamp_points:return target
+  tag,origin=min(lamp_points.items(),key=lambda item:np.linalg.norm(centre-item[1]))
+  if np.linalg.norm(centre-origin)>.48 or np.max(np.linalg.norm(points-origin,axis=1))>.75:return target
+  key=(tag,target)
+  if key not in lamp_parts:
+   label='iv_lamp_'+tag+str(sum(k[0]==tag for k in lamp_parts))+'_hi'
+   frame(label,frames[target],tuple(origin-pivots[target]));pivots[label]=origin.copy();lamp_parts[key]=label
+  return lamp_parts[key]
  body=next(n for n in nodes if n.get('skin')==0 and 'mesh' in n)
  for p in d['meshes'][body['mesh']]['primitives']:
   if d['materials'][p['material']].get('extras',{}).get('omitMissingDecal'):continue
@@ -148,7 +164,7 @@ def export(gltf_path,out,name,livery=None,paint_colors=None):
   for joints,weights in zip(j,w):
    weighted+=sum(x>0 for x in weights)>1;assigned.append(targetbone(boneids[joints[max(range(4),key=lambda k:weights[k])]]))
   for offset in range(0,len(ind),3):
-   ids=ind[offset:offset+3];targets=[assigned[i] for i in ids];target=collections.Counter(targets).most_common(1)[0][0];mixed+=len(set(targets))>1;wheel=target.startswith('wheel_');verts=[]
+   ids=ind[offset:offset+3];targets=[assigned[i] for i in ids];target=collections.Counter(targets).most_common(1)[0][0];mixed+=len(set(targets))>1;target=lamp_target(p['material'],ids,v,target);wheel=target.startswith('wheel_');verts=[]
    for i in ids:
     point=np.asarray(vc(v[i]))-pivots[target];normal=np.asarray(vc(norm[i]))
     if wheel:
@@ -205,7 +221,7 @@ def export(gltf_path,out,name,livery=None,paint_colors=None):
    label=target.replace('iv_suspension_','iv_leaf_');fi=frames.pop(target);frames[label]=fi;clump.frame_list[fi].name=label;pivots[label]=pivots.pop(target);buckets[label]=buckets.pop(target);leafparts.append(label)
  drawgroups=[]
  for target,tris in buckets.items():
-  if target.startswith(('wheel_','iv_','extra')):drawgroups.append((target,False,tris));continue
+  if target.startswith(('wheel_','iv_','extra')) and not target.startswith('iv_lamp_'):drawgroups.append((target,False,tris));continue
   for transparent in (False,True):
    group=[t for t in tris if (materials[t[0]].color.a<250)==transparent]
    if group:drawgroups.append((target,transparent,group))
@@ -250,7 +266,7 @@ def export(gltf_path,out,name,livery=None,paint_colors=None):
   for mi,m in enumerate(g.materials):
    for source in paint_materials:
     if m is materials[source['index']]:paint_locations.append(dict(geometry=gi,material=mi,channel=source['channel'],defaultColor=source['defaultColor']))
- return dict(paintMaterialLocations=paint_locations,name=name,rigVersion=3,extrasVersion=2,componentRules=rules,sourceExtraParents=extraParents,extrasPolicy='Automatically detected authored optional parts; select at most one when source combination rules are unavailable, preventing overlapping roofs',sourceExtraMap={bone:target for bone,target in mapping.items() if bone.startswith('extra_') and target in buckets},materialPolicyVersion=3,paintMaterials=paint_materials,detectedPaintChannels=sorted({m["channel"] for m in paint_materials}),paintColors={str(k):list(v) for k,v in paint_colors.items()},liverySelection=livery or 'source',liveryLayers=[dict(material=m['name'],mode=m.get('extras',{}).get('liveryMode'),texture=m.get('extras',{}).get('textureName')) for m in d['materials'] if m.get('extras',{}).get('liveryMode')],wheelBodyMirrors=wheelBodyMirrors,wheelFragmentMaterials={side:len(d['meshes'][wheel_meshes.get('wheel_'+suffix,frontmesh)]['primitives']) for suffix,side in [('lf','lf'),('lr','lb'),('rf','rf'),('rr','rb'),('lm','lm'),('rm','rm')] if 'wheel_'+side+'_dummy' in frames},glassAtomics=sum(int(transparent) for _,transparent,_ in drawgroups),optionalExtras=[k for k in buckets if k.startswith('extra')],paintChannels=[{'material':m['name'],'shaderDiffuse':m.get('extras',{}).get('shaderVectors',{}).get('185f047c')} for m in d['materials'] if m.get('extras',{}).get('paint')],rigParts={k:len(v) for k,v in buckets.items() if k.startswith('iv_')},leafClassification='Longitudinal suspension mesh aspect ratio; authored geometry only',bodyBounds=bounds,wheelCenters=[pivots['wheel_'+side+'_dummy'].tolist() for side in ('lf','lb','rf','rb')],wheelDiameter=diameter,textureCount=len(textures),textureSources={k:str(v.resolve()) for k,v in textures.items()},parts={k:len(v) for k,v in buckets.items()},vertices=sum(len(g.vertices) for g in clump.geometry_list),sourceBones=bonecount,limitations=['Four/six-wheel rigid RSC5 car importer; not YFT/YTD, bikes, boats or deforming rigs; native middle wheels share rear suspension contact physics','No authored damaged-part variants; native LocalDent handles deformation','Gameplay appearance and performance require an in-game check'])
+ return dict(lampGlassVersion=1,lampLensParts={label:len(buckets[label]) for label in lamp_parts.values()},paintMaterialLocations=paint_locations,name=name,rigVersion=3,extrasVersion=2,componentRules=rules,sourceExtraParents=extraParents,extrasPolicy='Automatically detected authored optional parts; select at most one when source combination rules are unavailable, preventing overlapping roofs',sourceExtraMap={bone:target for bone,target in mapping.items() if bone.startswith('extra_') and target in buckets},materialPolicyVersion=3,paintMaterials=paint_materials,detectedPaintChannels=sorted({m["channel"] for m in paint_materials}),paintColors={str(k):list(v) for k,v in paint_colors.items()},liverySelection=livery or 'source',liveryLayers=[dict(material=m['name'],mode=m.get('extras',{}).get('liveryMode'),texture=m.get('extras',{}).get('textureName')) for m in d['materials'] if m.get('extras',{}).get('liveryMode')],wheelBodyMirrors=wheelBodyMirrors,wheelFragmentMaterials={side:len(d['meshes'][wheel_meshes.get('wheel_'+suffix,frontmesh)]['primitives']) for suffix,side in [('lf','lf'),('lr','lb'),('rf','rf'),('rr','rb'),('lm','lm'),('rm','rm')] if 'wheel_'+side+'_dummy' in frames},glassAtomics=sum(int(transparent) for _,transparent,_ in drawgroups),optionalExtras=[k for k in buckets if k.startswith('extra')],paintChannels=[{'material':m['name'],'shaderDiffuse':m.get('extras',{}).get('shaderVectors',{}).get('185f047c')} for m in d['materials'] if m.get('extras',{}).get('paint')],rigParts={k:len(v) for k,v in buckets.items() if k.startswith('iv_')},leafClassification='Longitudinal suspension mesh aspect ratio; authored geometry only',bodyBounds=bounds,wheelCenters=[pivots['wheel_'+side+'_dummy'].tolist() for side in ('lf','lb','rf','rb')],wheelDiameter=diameter,textureCount=len(textures),textureSources={k:str(v.resolve()) for k,v in textures.items()},parts={k:len(v) for k,v in buckets.items()},vertices=sum(len(g.vertices) for g in clump.geometry_list),sourceBones=bonecount,limitations=['Four/six-wheel rigid RSC5 car importer; not YFT/YTD, bikes, boats or deforming rigs; native middle wheels share rear suspension contact physics','No authored damaged-part variants; native LocalDent handles deformation','Gameplay appearance and performance require an in-game check'])
 
 def donor_collision(runtime,donor,name,out,report=None):
  c=col.coll();c.load_file(str(runtime/'models/coll/vehicles.col'));model=next((m for m in c.models if m.model_name.lower()==donor.lower()),None)

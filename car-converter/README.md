@@ -73,3 +73,6 @@ These are conversion-time RGB overrides stored in the material; they are fixed c
 ```
 
 No game-wide colour palette is replaced. Selected RGB values matching the native paint sentinel colours are shifted by one RGB unit to prevent accidental remapping. Paint-only updates preserve the rest of the DFF byte for byte and validate a temporary package before replacing the output. Gameplay appearance still requires inspection.
+
+
+Physical lamp glass: the exporter detects authored lamp bones and separates nearby glass/emissive lens triangles, preserving their component parent. Packages require a native runtime with `convertedLampGlassVersion >= 1`. Break/repair visibility and fragment spawning are implemented in the current reVC source; gameplay appearance still requires verification. Reports list detected parts under `lampLensParts`; models whose lenses cannot be classified safely keep their geometry intact. This is not support for authored cracked-lens intermediate textures.

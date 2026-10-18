@@ -65,6 +65,7 @@ def install(folder,runtime):
  for process in ('reVC_metal','reVC'):
   if subprocess.run(['pgrep','-x',process],stdout=subprocess.DEVNULL).returncode==0:raise RuntimeError('Close Vice City before installing. Converted files are ready; use Install again after closing it.')
  if capabilities.get('convertedExtrasVersion',0)>=1 and report.get('extrasVersion',0)<1:raise RuntimeError('This package predates automatic extras and colour preservation. Convert it again before installing so it cannot restore merged roofs or exterior-coloured interiors.')
+ if report.get('lampGlassVersion',0)>capabilities.get('convertedLampGlassVersion',0):raise RuntimeError('Install the native breakable lamp-glass update before installing this car.')
  if report.get('extrasVersion',0)>capabilities.get('convertedExtrasVersion',0) or report.get('materialPolicyVersion',0)>capabilities.get('convertedMaterialVersion',0):raise RuntimeError('Install the native converted extras/material update before installing this newly converted car.')
  if report.get('handlingFit') and json.loads((runtime/'NATIVE_CAR_ADDONS.json').read_text()).get('convertedHandlingVersion',0)<1:raise RuntimeError('Install the native per-car handling update before this package')
  if report.get('suspension',{}).get('autoFit') and json.loads((runtime/'NATIVE_CAR_ADDONS.json').read_text()).get('convertedSuspensionVersion',0)<1:raise RuntimeError('Install the native converted-suspension update before this package')
