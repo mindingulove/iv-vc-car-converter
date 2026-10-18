@@ -39,4 +39,5 @@ def check(path):
     score=np.dot(np.cross(v[1]-v[0],v[2]-v[0]),normal)
     if abs(score)>1.e-9:scores.append(score>0)
    assert not scores or sum(scores)/len(scores)>.95,(path.name,'wheel faces inverted')
-for path in sys.argv[1:]:check(Path(path));print('PASS',Path(path).name)
+if __name__=='__main__':
+ for path in sys.argv[1:]:check(Path(path));print('PASS',Path(path).name)

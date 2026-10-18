@@ -5,12 +5,12 @@ def classify(extras):
  shader=extras.get('shader','').lower();name=(extras.get('textureName') or '').lower()
  diffuse=extras.get('shaderVectors',{}).get('185f047c',[2,1,1,0])
  close=lambda v:len(diffuse)>=3 and all(abs(a-b)<.01 for a,b in zip(diffuse[:3],v))
- glass='glass' in shader
  livery=extras.get('liveryMode')=='fixed' or (not extras.get('liveryMode') and any(word in name for word in ('_sign_', 'livery', 'paintjob')))
  mask=any(word in name for word in ('specmap','specular','dirtmap'))
  interior=any(word in name for word in ('interior','leather','seat','carpet','dash','softtop','canvas','fabric','cloth'))
+ glass='glass' in shader or (not extras.get('paint') and not mask and not interior and any(word in name for word in ('glasswindow','windscreen','vehicle_glass','vehglass')))
  slot=0
- if extras.get('paint') and not interior and not livery:
+ if extras.get('paint') and not interior and not livery and not glass:
   if close((2,1,1)):slot=1
   elif close((2,2,2)) or close((1,2,1)):slot=2
   elif len(diffuse)>=3 and abs(diffuse[0]-2)<.01 and abs(diffuse[1]-diffuse[2])<.01 and abs(diffuse[1]-round(diffuse[1]))<.01 and 3<=round(diffuse[1])<=16:slot=round(diffuse[1])

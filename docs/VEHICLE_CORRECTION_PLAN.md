@@ -205,3 +205,8 @@ Final fallback guard: MatFX switches to traced glass only when ray tracing is ac
 - regta-upstate-run: Metal SHA256 `8ae534cae178aa049237f7962b7e7bdaa93356db9f3aab2bddcbf416e4bb14f5`; backup `/Users/jaymeeduardo/Documents/regta-upstate-run/backups/window-reflections-20261018-051911`.
 
 - revc-metal-run: Metal SHA256 `53c63bfc127d72edb3234e966b4f0935c2190a141a175c1f112ea9f345922866`; backup `/Users/jaymeeduardo/Documents/revc-metal-run/backups/window-reflections-20261018-051911`.
+
+
+## Converter-only handoff, 2026-10-18
+
+See [converter validation](CONVERTER_UPDATE_2026-10-18.md) for the synchronized toolkit changes, supported/blocked sources and evidence limits. Current scratches FAILED gameplay: the user reports uniform zebra lines and requires local, continuous wall-contact abrasion exposing undercoat/metal. See [deferred paint damage plan](DEFERRED_PAINT_DAMAGE_PLAN.md). Do not implement it while Claude is changing FPS/renderer code in either game.

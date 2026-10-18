@@ -76,3 +76,11 @@ No game-wide colour palette is replaced. Selected RGB values matching the native
 
 
 Physical lamp glass: the exporter detects authored lamp bones and separates nearby glass/emissive lens triangles, preserving their component parent. Packages require a native runtime with `convertedLampGlassVersion >= 1`. Break/repair visibility and fragment spawning are implemented in the current reVC source; gameplay appearance still requires verification. Reports list detected parts under `lampLensParts`; models whose lenses cannot be classified safely keep their geometry intact. This is not support for authored cracked-lens intermediate textures.
+
+## Glass and optional components
+
+The conversion summary shows detected glass groups, glass inside extras, optional-part count and paint channels. Source material/shader and recognized glass texture hints are used; specular masks and interior textures are excluded. Missing glass geometry is not invented. Windscreen/selected-extra glass needs full-pane native support; the installer checks both installed VC executables before changing files. Rebuilds with stripped symbols should declare `convertedWindowGlassVersion: 2` in `NATIVE_CAR_ADDONS.json`.
+
+Selected extra geometry stays together until the native runtime has selected the variant; then only its connected glass is separated for damage. Inner geometry authored below a bonnet is attached to that bonnet instead of becoming a random optional part. Sparse source extra IDs are renumbered into six native slots; more independent optional components require authoring groups and are refused. Source combination rules are not fabricated.
+
+The toolkit exports native VC packages. Its runtime-folder picker does not provide a GTA III model/handling exporter. Game-side damage/wear fixes exist in both ports, independently of the VC package format. Dirt/scratches and breaking/repair are runtime effects and still require gameplay review.

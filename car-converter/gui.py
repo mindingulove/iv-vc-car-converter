@@ -32,13 +32,18 @@ class ConverterWindow:
   runtimebar=ttk.LabelFrame(panel,text='Target game folder',padding=6);runtimebar.grid(row=12,column=0,columnspan=4,sticky='ew');runtimebar.columnconfigure(0,weight=1)
   ttk.Entry(runtimebar,textvariable=self.runtime).grid(row=0,column=0,sticky='ew');ttk.Button(runtimebar,text='Choose game folder…',command=self.choose_runtime).grid(row=0,column=1)
   self.paintpanel=ttk.LabelFrame(panel,text='Car colours — convert first to detect the available channels',padding=6);self.paintpanel.grid(row=13,column=0,columnspan=4,sticky='ew')
+  self.audit=tk.StringVar(value='Glass, optional parts and paint channels are checked during conversion.');ttk.Label(panel,textvariable=self.audit,wraplength=900).grid(row=14,column=0,columnspan=4,sticky='w',pady=6)
   self.update_mode()
  def choose_runtime(self):
+  if self.busy:self.status.set('Wait for the current conversion before changing the destination.');return
   value=filedialog.askdirectory(title='Choose game folder (or its Modloader folder)',initialdir=self.runtime.get())
   if not value:return
   try:
    runtime=resolve_runtime(value);cars=sorted({r[1] for r in car_rows(runtime).values()})
    if not cars:raise ValueError('No car definitions found in this game folder.')
+   if self.lastoutput and self.runtime_bound!=runtime:
+    self.lastoutput=None;self.installbutton.configure(state='disabled');self.preview.configure(image='',text='Destination changed. Convert again for this game folder.');self.paint_choices={}
+    for child in self.paintpanel.winfo_children():child.destroy()
    self.runtime.set(str(runtime));self.cars=cars;self.donor.configure(values=cars)
    if self.donor.get() not in cars:self.donor.set(cars[0])
    self.status.set('Modloader found: '+str(runtime/'modloader'))
@@ -48,6 +53,8 @@ class ConverterWindow:
  def show_paint(self):
   for child in self.paintpanel.winfo_children():child.destroy()
   report=json.loads((self.lastoutput/'conversion.json').read_text());self.paint_choices={int(k):'#'+bytes(v).hex() for k,v in report.get('paintColors',{}).items()}
+  from conversion_audit import summary
+  self.audit.set(summary(report))
   channels=report.get('detectedPaintChannels',[])
   self.paintpanel.configure(text='Detected car colours (conversion-time colours; source liveries/interiors preserved)')
   for i,channel in enumerate(channels):
