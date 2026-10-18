@@ -1,0 +1,13 @@
+.venv/
+.env
+.DS_Store
+__pycache__/
+*.pyc
+DragonFF/
+gta4-webmap/converter/
+gta4-webmap/extractor/bin/
+gta4-webmap/extractor/obj/
+exports/
+cache/
+extracted-packs/
+*.log

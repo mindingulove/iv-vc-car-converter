@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="PlayerExport.cs" />
+    <Compile Include="ModelGltfWriter.cs" />
+    <Compile Include="VehicleExport.cs" />
+    <Compile Include="VehicleData.cs" />
+    <Compile Include="PedExport.cs" />
+    <Compile Include="NavmeshExport.cs" />
+    <Compile Include="WeaponExport.cs" />
+    <Compile Include="TextureIo.cs" />
+    <Compile Include="HeadlessTextures.cs" />
+    <!-- Local licensed RageLib override: correct complete DXT mip block sizes. -->
+    <Compile Include="RageTextureInfo.cs" />
+    <Compile Include="UnityStubs.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Common\**\*.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\FileSystem\Common\**\*.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\FileSystem\IMG\**\*.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\FileSystem\IMGFileSystem.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\FileSystem\RPF\**\*.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\FileSystem\RPFFileSystem.cs" />
+    <!-- Animation\AnimationClip.cs is deliberately excluded: it is the only file
+         in that folder that depends on Unity.Mathematics. -->
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\AnimationDictionaryFile.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\AnimationData.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\AnimTrack.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\AnimChunk.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\AnimChannel.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Animation\File.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Models\IDataReader.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Models\IEmbeddedResourceReader.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Models\Resource\**\*.cs" />
+    <Compile Include="..\converter\Assets\Scripts\RageLib\Textures\Resource\**\*.cs" Exclude="..\converter\Assets\Scripts\RageLib\Textures\Resource\TextureInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\converter\Assets\Plugins\Managed\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
